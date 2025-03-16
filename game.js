@@ -11,11 +11,25 @@ function getComputerChoice() {
     }
 }
 
-const getHumanChoice = () => prompt("Choose rock, paper, or scissors!");
+// getHumanChoice
+const buttons = document.querySelectorAll("button");
+
+buttons.forEach((button) => {
+    button.addEventListener("click", () =>
+        playRound(button.id, getComputerChoice())
+    );
+});
 
 // global variables
 let humanScore = 0;
 let computerScore = 0;
+
+const resultsDiv = document.querySelector("div.results");
+const scoresDiv = document.querySelector("div.scores");
+const humanScoreDiv = document.querySelector("div#human-score");
+humanScoreDiv.textContent = `Human: ${humanScore}`;
+const computerScoreDiv = document.querySelector("div#computer-score");
+computerScoreDiv.textContent = `Computer: ${computerScore}`;
 
 function playRound(humanChoice, computerChoice) {
     let result;
@@ -45,15 +59,13 @@ function playRound(humanChoice, computerChoice) {
                     ? "lose"
                     : "tie";
             break;
-        default:
-            console.log("invalid input");
     }
 
     // increment score
     if (result === "win") {
-        humanScore++;
+        humanScoreDiv.textContent = `Human: ${++humanScore}`;
     } else if (result === "lose") {
-        computerScore++;
+        computerScoreDiv.textContent = `Computer: ${++computerScore}`;
     }
 
     // log result
@@ -64,24 +76,23 @@ function playRound(humanChoice, computerChoice) {
             : `You ${result}! ${formatChoice(humanChoice)} ${
                   result === "win" ? "beats" : "loses to"
               } ${formatChoice(computerChoice)}.`;
-    console.log(output);
-}
 
-function playGame() {
-    for (let i = 0; i < 5; i++) {
-        console.log(`Round ${i + 1}`);
-        playRound(getHumanChoice(), getComputerChoice());
+    let outputDiv = document.createElement("div");
+    outputDiv.textContent = output;
+    resultsDiv.appendChild(outputDiv);
+
+    if (humanScore === 5 || computerScore === 5) {
+        let finalResult = humanScore > computerScore ? "win" : "lose";
+
+        let announceDiv = document.createElement("div");
+        announceDiv.textContent = `GAME OVER! You ${finalResult} ${humanScore}:${computerScore}!`;
+        announceDiv.style.fontWeight = "bold";
+        announceDiv.style.color = "red";
+
+        resultsDiv.appendChild(announceDiv);
+
+        buttons.forEach((button) => {
+            button.disabled = true;
+        });
     }
-
-    console.log(
-        `WINNER: ${
-            humanScore > computerScore
-                ? "Human"
-                : humanScore < computerScore
-                ? "Computer"
-                : "It's a tie"
-        }!`
-    );
 }
-
-playGame();
